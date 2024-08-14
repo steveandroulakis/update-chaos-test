@@ -14,8 +14,8 @@ const { square } = proxyActivities<typeof activities>({
 
 export async function UpdateWorkflow(): Promise<string> {
   setHandler(update, async (n) => {
-    const result = await square(n);
-    return result;
+    await Promise.all([square(n), square(n), square(n), square(n)]);
+    return 1;
   });
 
   let finish = false;
