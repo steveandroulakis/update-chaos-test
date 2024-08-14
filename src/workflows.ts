@@ -3,13 +3,18 @@ import {
 }
   from '@temporalio/workflow';
 
+import type * as activities from './activities';
 export const finishSignal = defineSignal('finish');
 export const update = defineUpdate<number, [number]>('squareUpdate');
 
+const { square } = proxyActivities<typeof activities>({
+  startToCloseTimeout: '2 seconds',
+  retry: { nonRetryableErrorTypes: ['CreditCardExpiredException'] }
+});
+
 export async function UpdateWorkflow(): Promise<string> {
-  setHandler(update, (n) => {
-    const result = n * n;
-    console.log(`UpdateWorkflow: Squaring ${n} = ${result}`);
+  setHandler(update, async (n) => {
+    const result = await square(n);
     return result;
   });
 

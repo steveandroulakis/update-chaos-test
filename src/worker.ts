@@ -1,6 +1,7 @@
 import fs from 'fs/promises';
 import { Worker, NativeConnection } from '@temporalio/worker';
 import { Env, getEnv } from './interfaces/env';
+import * as activities from './activities';
 
 /**
  * Run a Worker with an mTLS connection, configuration is provided via environment variables.
@@ -50,6 +51,9 @@ async function run({
     namespace,
     workflowsPath: require.resolve('./workflows'),
     taskQueue,
+    activities: activities,
+    maxCachedWorkflows: 0,
+    maxConcurrentActivityTaskExecutions: 1
   });
   console.log('Worker connection successfully established');
 
@@ -64,3 +68,14 @@ run(getEnv()).then(
     process.exit(1);
   }
 );
+
+// Setup
+// Update that triggers activity with 200ms delay
+//     maxCachedWorkflows: 0, -- no sticky wf cache
+//     maxConcurrentActivityTaskExecutions: 1 -- no parallel activity execution per worker
+// Test 1
+// 4 workers, uninterrupted
+// Test 2
+// 4 workers, 2 killed along the way (try to slow down the workflow) 
+
+//
