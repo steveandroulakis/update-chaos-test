@@ -12,10 +12,17 @@ const { square } = proxyActivities<typeof activities>({
   retry: { nonRetryableErrorTypes: ['CreditCardExpiredException'] }
 });
 
+const workerCount = 4
+const taskQueuePartitions = 4
+
 export async function UpdateWorkflow(): Promise<string> {
   setHandler(update, async (n) => {
-    const result = await square(n);
-    return result;
+    var actions = [];
+    for (var i = 0; i < (workerCount * taskQueuePartitions); i++) {
+      actions.push(square(n));
+    }
+    await Promise.all(actions);
+    return 1;
   });
 
   let finish = false;

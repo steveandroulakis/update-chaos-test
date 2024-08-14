@@ -53,7 +53,8 @@ async function run({
     taskQueue,
     activities: activities,
     maxCachedWorkflows: 0,
-    maxConcurrentActivityTaskExecutions: 1
+    maxConcurrentActivityTaskPolls: 4,
+    maxConcurrentActivityTaskExecutions: 4,
   });
   console.log('Worker connection successfully established');
 
